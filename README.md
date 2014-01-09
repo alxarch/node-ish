@@ -1,4 +1,6 @@
-shimphjs
+node-ish
 ========
 
-Shim module for phantomjs
+Hackish shim module for phantomjs.
+
+Main goal is to be able to reuse node modules in phantomjs.
