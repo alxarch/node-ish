@@ -1,5 +1,5 @@
 {
-  "name": "shimphjs",
+  "name": "node-ish",
   "version": "0.0.1",
   "description": "PhantomJS shim.",
   "main": "index.js",
@@ -13,7 +13,7 @@
     "nodeify"
   ],
   "engines": {
-	  "phantomjs": ">= 1.7.0"
+    "phantomjs": ">= 1.7.0"
   },
   "author": "Alexandros Sigalas",
   "license": "ISC",

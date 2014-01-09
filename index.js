@@ -1,24 +1,53 @@
 require('es5-shim');
-var system = require('system');
-var events = require('events');
-var path = require('path-browserify');
 
-require.stub('path', path);
-global.require.stub('path', path);
+var stub = function (name, m) {
+	require.stub(name, m);
+	global.require.stub(name, m);
+};
 
-var assert = require('assert');
-require.stub('assert', assert);
-global.require.stub('assert', assert);
+var inherits = function inherits (ctor, superCtor) {
+	if (typeof ctor === 'function') {
+		ctor.super_ = superCtor;
+		var proto = (superCtor || {}).prototype || {};
+		ctor.prototype = Object.create(proto, {
+			constructor: {
+				value:         ctor,
+				enumerable:    false,
+				writable:      false,
+				configurable:  true
+			}});
+	}
+};
+
+stub('inherits', inherits);
 
 var util = require('util');
-require.stub('util', util);
-global.require.stub('util', util);
+util.inherits = inherits;
 
-require('console-browserify');
+stub('util', util);
+
+(function(console){
+	var _log = console.log;
+	var log = function () {
+		_log.call(console, util.format.apply(null, arguments));
+	};
+	module.exports = console;
+	console.info = console.log = console.error = console.warn = log;
+})(global.console);
+
+var path = require('path-browserify');
+stub('path', path);
+
+var assert = require('assert');
+stub('assert', assert);
 
 var unimplemented = function () {
 	throw new Error('Unimplemented!');
 };
+
+var system = require('system');
+var events = require('events');
+stub('events', events);
 
 var process = global.process = new events.EventEmitter();
 
@@ -44,8 +73,9 @@ process.stdout.write = function (data) {
 	console.log(data);
 };
 
-phantom.onError = function () {
-	process.emit('uncaughtException');
+phantom.onError = function (error) {
+	process.emit('uncaughtException', error);
+	throw error;
 };
 
 process.exit = function (code) {
