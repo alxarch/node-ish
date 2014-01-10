@@ -1,5 +1,4 @@
 require('es5-shim');
-
 var stub = function (name, m) {
 	require.stub(name, m);
 	global.require.stub(name, m);
@@ -47,17 +46,20 @@ var unimplemented = function () {
 
 var system = require('system');
 var events = require('events');
+var fs = require('fs');
 stub('events', events);
 
 var process = global.process = new events.EventEmitter();
 
+var CWD = fs.abolute('');
 process.cwd = function () {
-	return phantom.libraryPath;
+	return CWD;
 };
 
-process.chdir = function (dirname) {
-	phantom.libraryPath = path.resolve('dirname');
+process.chdir = function () {
+	CWD = path.resolve.apply null, arguments
 };
+
 process.env = system.env;
 process.argv = system.args;
 process.execPath = path.dirname(system.args[0]);
