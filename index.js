@@ -48,23 +48,23 @@ var system = require('system');
 var events = require('events');
 var fs = require('fs');
 stub('events', events);
-
+global.node_modules = {
+	events:events, 
+	path: path,
+	util: util,
+	assert: assert
+};
 var process = global.process = new events.EventEmitter();
 
-var CWD = fs.abolute('');
+var CWD = fs.absolute('');
+
 process.cwd = function () {
 	return CWD;
-};
-
-process.chdir = function () {
-	CWD = path.resolve.apply null, arguments
 };
 
 process.env = system.env;
 process.argv = system.args;
 process.execPath = path.dirname(system.args[0]);
-process.abort = unimplemented;
-
 process.stderr = {};
 process.stderr.write = function (data) {
 	console.error(data);
@@ -75,13 +75,13 @@ process.stdout.write = function (data) {
 	console.log(data);
 };
 
-phantom.onError = function (error) {
-	process.emit('uncaughtException', error);
-	throw error;
-};
+//phantom.onError = function (error) {
+//	process.emit('uncaughtException', error);
+//	throw error;
+//};
 
 process.exit = function (code) {
-	process.emit('exit', code);
+	process.emit('exit');
 	phantom.exit(code);
 };
 
