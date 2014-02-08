@@ -1,8 +1,4 @@
 require('es5-shim');
-var stub = function (name, m) {
-	require.stub(name, m);
-	global.require.stub(name, m);
-};
 
 var inherits = function inherits (ctor, superCtor) {
 	if (typeof ctor === 'function') {
@@ -18,27 +14,23 @@ var inherits = function inherits (ctor, superCtor) {
 	}
 };
 
-stub('inherits', inherits);
-
 var util = require('util');
 util.inherits = inherits;
 
-stub('util', util);
+require.stub('util', util);
 
-(function(console){
+if (!window.console.error) {
 	var _log = console.log;
-	var log = function () {
+	console.info = console.log = console.error = console.warn = function () {
 		_log.call(console, util.format.apply(null, arguments));
-	};
-	module.exports = console;
-	console.info = console.log = console.error = console.warn = log;
-})(global.console);
+	};;
+}
 
 var path = require('path-browserify');
-stub('path', path);
+require.stub('path', path);
 
 var assert = require('assert');
-stub('assert', assert);
+require.stub('assert', assert);
 
 var unimplemented = function () {
 	throw new Error('Unimplemented!');
@@ -46,45 +38,58 @@ var unimplemented = function () {
 
 var system = require('system');
 var events = require('events');
+var EventEmitterHack = function () {
+	if (this instanceof EventEmitterHack && !this._events) {
+		this._events = {};
+  		this._maxListeners = this._maxListeners || undefined;
+	}
+	else {
+		return EventEmitterHack;
+	}
+};
+EventEmitterHack.prototype = events.prototype;
+EventEmitterHack.EventEmitter = events;
 var fs = require('fs');
-stub('events', events);
-global.node_modules = {
-	events:events, 
-	path: path,
-	util: util,
-	assert: assert
-};
-var process = global.process = new events.EventEmitter();
+require.stub('events', EventEmitterHack);
 
-var CWD = fs.absolute('');
+if (typeof window.process === "undefined") {
+	var process = window.process = new EventEmitterHack();
 
-process.cwd = function () {
-	return CWD;
-};
+	process.chdir = function (directory) {
+		if (!fs.changeWorkingDirectory(fs.absolute(directory))) {
+			throw new Error("Failed to change directory.");
+		}
+	};
 
-process.env = system.env;
-process.argv = system.args;
-process.execPath = path.dirname(system.args[0]);
-process.stderr = {};
-process.stderr.write = function (data) {
-	console.error(data);
-};
+	process.cwd = function () {
+		return fs.absolute('');
+	};
 
-process.stdout = {};
-process.stdout.write = function (data) {
-	console.log(data);
-};
+	process.env = system.env;
+	process.argv = system.args;
+	process.stderr = {};
+	process.stderr.write = function (data) {
+		console.error(data);
+	};
 
-//phantom.onError = function (error) {
-//	process.emit('uncaughtException', error);
-//	throw error;
-//};
+	process.stdout = {};
+	process.stdout.write = function (data) {
+		console.log(data);
+	};
 
-process.exit = function (code) {
-	process.emit('exit');
-	phantom.exit(code);
-};
+	process.exit = function (code) {
+		process.emit('exit');
+		phantom.exit(code);
+	};
 
-process.version = phantom.version.major + '.' + phantom.version.minor + '.' + phantom.version.patch;
+	process.version = phantom.version.major + '.' + phantom.version.minor + '.' + phantom.version.patch;
+}
 
-module.exports = process;
+module.exports = {
+	extend: function (rq) {
+		rq.stub('events', EventEmitterHack);
+		rq.stub('path', path);
+		rq.stub('util', util);
+		rq.stub('assert', assert);
+	}
+}
