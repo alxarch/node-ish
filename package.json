@@ -19,10 +19,13 @@
   "license": "ISC",
   "dependencies": {
     "path-browserify": "0.0.0",
-    "es5-shim": "~2.3.0",
     "events": "~1.0.0",
     "util": "~0.10.2",
     "assert": "~1.1.0",
-    "console-browserify": "~1.0.3"
+    "console-browserify": "~1.0.3",
+    "inherits": "~2.0.1"
+  },
+  "devDependencies": {
+    "async": "~0.2.10"
   }
 }
