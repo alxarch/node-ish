@@ -16,7 +16,6 @@ var inherits = function inherits (ctor, superCtor) {
 
 var util = require('util');
 util.inherits = inherits;
-
 require.stub('util', util);
 
 if (!window.console.error) {
@@ -26,7 +25,18 @@ if (!window.console.error) {
 	};;
 }
 
+var system = require("system");
 var path = require('path-browserify');
+path.delimiter = ({
+	linux: ":",
+	windows: ";",
+	macosx: ":"
+})[system.os];
+path.separator = fs.separator;
+
+require.stub('path', path);
+
+
 require.stub('path', path);
 
 var assert = require('assert');
@@ -36,7 +46,6 @@ var unimplemented = function () {
 	throw new Error('Unimplemented!');
 };
 
-var system = require('system');
 var events = require('events');
 var EventEmitterHack = function () {
 	if (this instanceof EventEmitterHack && !this._events) {
