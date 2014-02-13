@@ -15,7 +15,7 @@ else
 		fs.absolute ""
 
 	process.env = system.env
-	process.argv = system.args
+	process.argv = [system.platform].concat(system.args)
 	process.stderr = {}
 	process.stderr.write = (data) ->
 		console.error(data)
