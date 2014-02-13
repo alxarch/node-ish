@@ -1,6 +1,7 @@
-unless window.console.error
+util = require "./util"
+console = module.exports = window.console
+unless console.__nodeified
 	_log = console.log
 	console.info = console.log = console.error = console.warn = (args...) ->
 		_log.call console, util.format.apply null, args
-
-module.exports = window.console
+	console.__nodeified = yes

@@ -1,2 +1,2 @@
 module.exports = (name) ->
-	require "./modules/#{name}"
+	require "./#{name}"

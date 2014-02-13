@@ -1,3 +1,3 @@
 module.exports = (done) ->
-	util = require "../modules/util"
+	util = require "../util"
 	done()

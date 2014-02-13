@@ -1,3 +1,3 @@
 module.exports = (done) ->
-	assert = require "../modules/assert"
+	assert = require "../assert"
 	done()

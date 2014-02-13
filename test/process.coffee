@@ -1,9 +1,9 @@
 fs = require "fs"
 module.exports = (done) ->
-	assert = require "../modules/assert"
+	assert = require "../assert"
 	assert.equal window.process
 
-	proc = require "../modules/process"
+	proc = require "../process"
 	assert.equal proc, window.process
 	assert.equal proc.cwd(), fs.absolute("")
 	delete window.process
