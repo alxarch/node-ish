@@ -10,6 +10,6 @@ delimiters =
 	windows: ";"
 	macosx: ":"
 
-path.delimiter = delimiters[system.os]
+path.delimiter = delimiters[system.os.name]
 path.separator = fs.separator
 module.exports = path
