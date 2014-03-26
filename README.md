@@ -1,17 +1,20 @@
 node-ish
 ========
 
-Hackish shim module for phantomjs.
-
-Main goal is to be able to reuse node modules in phantomjs.
+Shim module for using npm packages in PhantomJS.
 
 Usage:
 
-```javascript
-// Use before inside "main" script before requiring 
-// any module that depends on node modules.
+```js
 
-require("node-ish").extend(require);
+var process = require("node-ish");
+var path = require("node-ish/path");
+```
 
+For creating stubs to wrap node modules:
+
+```js
+require.stub("path", require("node-ish/path"));
+var module = require("some-module-that-needs-path");
 
 ```
